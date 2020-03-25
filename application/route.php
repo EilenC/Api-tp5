@@ -10,8 +10,13 @@
 // +----------------------------------------------------------------------
 
 use think\Route;
+//接口入口地址
+$api_base_url = 'api/v1';
+//登录接口的路由
+Route::post($api_base_url.'/login', 'api/Login/index');
 
-Route::post('login', 'api/Login/index');
+
+Route::get($api_base_url.'/users', 'api/Users/index');
 
 return [
     // '__pattern__' => [
