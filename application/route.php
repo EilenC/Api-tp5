@@ -14,9 +14,20 @@ use think\Route;
 $api_base_url = 'api/v1';
 //登录接口的路由
 Route::post($api_base_url.'/login', 'api/Login/index');
+//添加用户
+Route::post($api_base_url.'/users', 'api/Users/add');
+
+Route::put($api_base_url.'/users/:id/role', 'api/Users/editRoleById');
+Route::put($api_base_url.'/users/:uid/state/:type', 'api/Users/updateState');
+Route::put($api_base_url.'/users/:id', 'api/Users/updateInfo');
 
 
+Route::delete($api_base_url.'/users/:id', 'api/Users/deleteById');
+
+Route::get($api_base_url.'/users/:id', 'api/Users/findById');
 Route::get($api_base_url.'/users', 'api/Users/index');
+Route::get($api_base_url.'/menus', 'api/Menus/index');
+Route::get($api_base_url.'/roles', 'api/Roles/index');
 
 return [
     // '__pattern__' => [

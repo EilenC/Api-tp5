@@ -43,11 +43,35 @@ class Common extends Controller
         }
 
         //验证token与是否非法
-        if(!($decoded->iss === config('jwt_iss'))){
+        if (!($decoded->iss === config('jwt_iss'))) {
             self::return_msg(403, 'Token非法!');
         }
     }
 
+    /**
+     * 判断变量是否存在
+     * @param $val
+     * @return bool
+     */
+    static public function is_val($val)
+    {
+        if (!isset($val) || empty($val)) {
+            return true;
+        }
+        return false;
+    }
+
+    static public function clear_space($str)
+    {
+        return str_replace(" ",'',$str);
+    }
+
+    /**
+     * 统一定义的返回API
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     */
     static public function return_msg($code, $msg = '', $data = [])
     {
         // 组合数据

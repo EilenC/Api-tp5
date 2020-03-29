@@ -10,7 +10,7 @@ return [
     'jwt_key' => 'Eilen',
 
     // JWT token有效期限
-    'jwt_exp' => 3600,
+    'jwt_exp' => 36000,
     // JWT 签名人
     'jwt_iss' => 'http://eilen.top',
     'pwd_key_header' => '%%',
