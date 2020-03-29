@@ -24,6 +24,7 @@ Route::put($api_base_url.'/users/:id', 'api/Users/updateInfo');
 
 Route::delete($api_base_url.'/users/:id', 'api/Users/deleteById');
 
+Route::get($api_base_url.'/rights/:type', 'api/Rights/index');
 Route::get($api_base_url.'/users/:id', 'api/Users/findById');
 Route::get($api_base_url.'/users', 'api/Users/index');
 Route::get($api_base_url.'/menus', 'api/Menus/index');
