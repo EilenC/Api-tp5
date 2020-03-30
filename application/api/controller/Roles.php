@@ -12,11 +12,20 @@ namespace app\api\controller;
 use app\api\model\Permission;
 use app\api\model\PermissionApi;
 use app\api\model\Role;
+use think\Exception;
+use think\exception\ErrorException;
 
 class Roles extends Common
 {
     protected $rolesList;
 
+    /**
+     * 角色列表
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function index()
     {
 //        处理最外层数据
@@ -63,14 +72,24 @@ class Roles extends Common
 
             //            合并3级目录
             foreach ($list1 as $key1 => $item1) {
+                if (self::is_val($list1)){
+                    break;
+                }
                 foreach ($item1 as $skey => $sitem) {
+                    if(self::is_val($list2)){
+                        break;
+                    }
                     $list1[$key1][$skey]['children'] = $list2[$sitem['id']];
                 }
             }
 
 //            合并2级目录
             foreach ($list0 as $key2 => $item2) {
-                $list0[$key2]['children'] = $list1[$item2['id']];
+                try {
+                    $list0[$key2]['children'] = $list1[$item2['id']];
+                }catch (ErrorException $e){
+                    continue;
+                }
             }
 
 //            foreach ($data as $k => $v) {
@@ -85,66 +104,155 @@ class Roles extends Common
         self::return_msg(200, '获取成功!', $data);
     }
 
-//    处理一级目录
-    public function format_array_info($list, $father, $level)
+    /**
+     * 根据 ID 角色授权
+     * @param $roleId
+     * @throws \think\exception\PDOException
+     */
+    public function setRolesById($roleId)
     {
-        if ($level == 0) {
-            foreach ($list as $key => $val) {
-                $val = $val->toArray();
-                $tmp = Permission::all($val['ps_ids']);
-                foreach ($tmp as $skey => $sval) {
-                    $sval = $sval->toArray();
-                    if ($sval['ps_level'] == 0) {
-                        $father[$key]['children'][] = [
-                            "id"       => $sval['ps_id'],
-                            "authName" => $sval['ps_name'],
-                            "path"     => PermissionApi::where(['ps_id' => $sval['ps_id']])->find()->toArray()['ps_api_path'],
-                            "children" => [],
-                        ];
-                    }
+        if (self::is_val($roleId)) {
+            self::return_msg(400, '参数错误!', null);
+        }
+        if(self::is_val(input('post.rids'))){
+            $rids = [];
+        }else{
+            $rids = explode(',', input('post.rids'));
+        }
+        Role::startTrans();
+        $list = $this->get_role_by_id($roleId);
+//        if (self::is_val($list['ps_ids'])) {
+//            $oldids = [];
+//        } else {
+//            $oldids = explode(",", $list['ps_ids']);
+//        }
+        $oldids = [];
+        foreach ($rids as $item) {
+            if (in_array($item, $oldids)) {
+                continue;
+            } else {
+                $oldids[] = $item;
+            }
+        }
+        try {
+            Role::where('role_id', (int)$roleId)->update([
+                'ps_ids' => implode(',', $oldids),
+            ]);
+            // 提交事务
+            Role::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            self::return_msg(500, '更新用户状态失败');
+            Role::rollback();
+        }
+
+        self::return_msg(200, '更新成功!', null);
+    }
+
+    /**
+     * 根据 ID 删除指定权限
+     * @param $roleId
+     * @param $rightId
+     * @throws Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     */
+    public function removeRolesById($roleId, $rightId)
+    {
+        $list = $this->get_role_by_id($roleId);
+        $new_pids = [];
+        $psids = explode(',', $list['ps_ids']);
+        for ($i = 0; $i < count($psids); $i++) {
+            if ($psids[$i] == $rightId) {
+                continue;
+            }
+            $new_pids[] = $psids[$i];
+        }
+        $new_pids = implode(',', $new_pids);
+        //开启事务
+        Role::startTrans();
+        try {
+            $st = Role::where('role_id', (int)$roleId)->update(['ps_ids' => $new_pids]);
+            // 提交事务
+            Role::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            self::return_msg(500, '设置角色失败!');
+            Role::rollback();
+        }
+        $list0=[];
+        $list1=[];
+        $list2=[];
+        $tmp = Permission::all($new_pids);
+        foreach ($tmp as $skey => $sval) {
+            $sval = $sval->toArray();
+            if ($sval['ps_level'] == 2) {
+//                    暂存3级目录
+                $list2[$sval['ps_pid']][] = [
+                    "id"       => $sval['ps_id'],
+                    "authName" => $sval['ps_name'],
+                    "path"     => PermissionApi::where(['ps_id' => $sval['ps_id']])->find()->toArray()['ps_api_path'],
+                ];
+            } else if ($sval['ps_level'] == 1) {
+//                    暂存2级目录
+                $list1[$sval['ps_pid']][] = [
+                    "id"       => $sval['ps_id'],
+                    "authName" => $sval['ps_name'],
+                    "path"     => PermissionApi::where(['ps_id' => $sval['ps_id']])->find()->toArray()['ps_api_path'],
+                    "children" => [],
+                ];
+            } else {
+//                    暂存1级目录
+                $list0[] = [
+                    "id"       => $sval['ps_id'],
+                    "authName" => $sval['ps_name'],
+                    "path"     => PermissionApi::where(['ps_id' => $sval['ps_id']])->find()->toArray()['ps_api_path'],
+                    "children" => [],
+                ];
+            }
+        }
+
+        //            合并3级目录
+        foreach ($list1 as $key1 => $item1) {
+            foreach ($item1 as $skey => $sitem) {
+                try {
+                    $list1[$key1][$skey]['children'] = $list2[$sitem['id']];
+                }catch (ErrorException $e){
+                    continue;
                 }
             }
         }
-//        if ($level == 1) {
-//            foreach ($this->rolesList as $key1 => $val1) {
-//                $val1 = $val1->toArray();
-//                $tmp = Permission::all($val1['ps_ids']);
-//                foreach ($tmp as $key2 => $val2){
-//                    $val2 = $val2->toArray();
-//                    if($val2['ps_level'] == $level){
-//                        foreach ($father as $key3 => $val3){
-//                            foreach ($val3['children'] as $key4=>$val4){
-//                                if($val4['id'] == $val2['ps_pid']){
-////                                    临时存2及目录
-//                                    $list2[] = [
-//                                        "id"       => $val2['ps_id'],
-//                                        "authName" => $val2['ps_name'],
-//                                        "path"     => PermissionApi::where(['ps_id' => $val2['ps_id']])->find()->toArray()['ps_api_path'],
-//                                        "children" => [],
-//                                    ];
-////                                    foreach ($list2 as $list2Key=>$list2val){
-////                                        if($list2val['id'] == $val2['ps_id']){
-////                                            array_pop($list2);
-////
-////                                        }
-////                                    }
-//                                    $father[$key3]['children'][$key4]['children'] = $list2;
-////                                    $father[$key3]['children'][$key4]['children'][] = [
-////                                        "id"       => $val2['ps_id'],
-////                                        "authName" => $val2['ps_name'],
-////                                        "path"     => PermissionApi::where(['ps_id' => $val2['ps_id']])->find()->toArray()['ps_api_path'],
-////                                        "children" => [],
-////                                    ];
-////                                    var_dump($list2);
-//
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+
+//            合并2级目录
+        foreach ($list0 as $key2 => $item2) {
+            try {
+                $list0[$key2]['children'] = $list1[$item2['id']];
+            }catch (ErrorException $e){
+                continue;
+            }
+        }
+
+//            foreach ($data as $k => $v) {
+//                $data[$k]['children'] = $list0;
 //            }
-//        }
-        return $father;
+        $data = $list0;
+        self::return_msg(200, '取消权限成功!', $data);
     }
 
+    /**
+     * 根据ID查询角色
+     * @param $id
+     * @return array|bool
+     */
+    public function get_role_by_id($id)
+    {
+        try {
+            $list = Role::get($id)->toArray();
+        } catch (\Throwable $err) {
+            return false;
+        }
+        return $list;
+    }
 }

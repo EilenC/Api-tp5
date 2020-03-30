@@ -17,12 +17,15 @@ Route::post($api_base_url.'/login', 'api/Login/index');
 //添加用户
 Route::post($api_base_url.'/users', 'api/Users/add');
 
+Route::post($api_base_url.'/roles/:roleId/rights', 'api/Roles/setRolesById');
+
 Route::put($api_base_url.'/users/:id/role', 'api/Users/editRoleById');
 Route::put($api_base_url.'/users/:uid/state/:type', 'api/Users/updateState');
 Route::put($api_base_url.'/users/:id', 'api/Users/updateInfo');
 
 
 Route::delete($api_base_url.'/users/:id', 'api/Users/deleteById');
+Route::delete($api_base_url.'/roles/:roleId/rights/:rightId', 'api/Roles/removeRolesById');
 
 Route::get($api_base_url.'/rights/:type', 'api/Rights/index');
 Route::get($api_base_url.'/users/:id', 'api/Users/findById');

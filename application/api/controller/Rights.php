@@ -19,6 +19,7 @@ class Rights extends Common
      * 根据类型所有权限列表
      * @param $type
      * @throws \think\exception\DbException
+     * @throws \think\Exception
      */
     public function index($type)
     {
@@ -30,6 +31,16 @@ class Rights extends Common
         self::return_msg(200, '获取权限列表成功!', $data);
     }
 
+    /**
+     * 根据类型 格式化 返回数据
+     * @param $list
+     * @param $type
+     * @return array|null
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function get_rights($list, $type)
     {
         $data = null;
