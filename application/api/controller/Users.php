@@ -66,7 +66,7 @@ class Users extends Common
             $users[] = $info;
         }
         $data = [
-            "total"   => count($list),
+            "total"   => Manager::count(),
             "pagenum" => $pagenum,
             "users"   => $users,
         ];
