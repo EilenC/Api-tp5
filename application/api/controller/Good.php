@@ -36,7 +36,7 @@ class Good extends Common
         $goodsModel = new Goods();
 //        拼接模糊查询字符串
         $query = '%' . $query . '%';
-        $list = $goodsModel->where('goods_name', 'like', $query)->order('goods_id','desc')->page($pagenum, $pagesize)->select();
+        $list = $goodsModel->where('goods_name', 'like', $query)->order('goods_id', 'desc')->page($pagenum, $pagesize)->select();
         if (self::is_val($list)) {
             $goods = [];
         }
@@ -50,20 +50,20 @@ class Good extends Common
             }
 
             $info = [
-                "goods_id"          => $item['goods_id'],
-                "cat_id"          => $item['cat_id'],
+                "goods_id"     => $item['goods_id'],
+                "cat_id"       => $item['cat_id'],
                 "goods_name"   => $item['goods_name'],
-                "goods_price"    => $item['goods_price'],
+                "goods_price"  => $item['goods_price'],
                 "goods_number" => $item['goods_number'],
-                "goods_weight"      => $item['goods_weight'],
-                "goods_state"       => $item['goods_state'],
-                "add_time"    => $item['add_time'],
-                "upd_time"    => $item['upd_time'],
-                "hot_mumber"    => $item['hot_mumber'],
-                "is_promote"    => $item['is_promote'],
-                "cat_one_id"    => $item['cat_one_id'],
-                "cat_two_id"    => $item['cat_two_id'],
-                "cat_three_id"    => $item['cat_three_id'],
+                "goods_weight" => $item['goods_weight'],
+                "goods_state"  => $item['goods_state'],
+                "add_time"     => $item['add_time'],
+                "upd_time"     => $item['upd_time'],
+                "hot_mumber"   => $item['hot_mumber'],
+                "is_promote"   => $item['is_promote'],
+                "cat_one_id"   => $item['cat_one_id'],
+                "cat_two_id"   => $item['cat_two_id'],
+                "cat_three_id" => $item['cat_three_id'],
             ];
 //            array_push($data,$info);
             $goods[] = $info;
@@ -81,7 +81,8 @@ class Good extends Common
      * @param $id
      * @throws \think\exception\PDOException
      */
-    public function removeGoodsById($id){
+    public function removeGoodById($id)
+    {
         try {
             Goods::where('goods_id', (int)$id)->update([
                 'is_del' => 1,
@@ -92,7 +93,7 @@ class Good extends Common
             Goods::commit();
         } catch (\Exception $e) {
             // 回滚事务
-            self::return_msg(500, '更新用户状态失败');
+            self::return_msg(500, '更新用户状态失败!');
             Goods::rollback();
         }
         self::return_msg(200, '删除成功!', null);

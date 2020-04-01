@@ -159,7 +159,7 @@ class Roles extends Common
      * @throws \think\exception\DbException
      * @throws \think\exception\PDOException
      */
-    public function removeRolesById($roleId, $rightId)
+    public function removeRoleById($roleId, $rightId)
     {
         $list = $this->get_role_by_id($roleId);
         $new_pids = [];

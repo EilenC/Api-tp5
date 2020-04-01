@@ -18,23 +18,35 @@ Route::post($api_base_url.'/login', 'api/Login/index');
 Route::post($api_base_url.'/users', 'api/Users/add');
 
 Route::post($api_base_url.'/roles/:roleId/rights', 'api/Roles/setRolesById');
+//添加参数
+Route::post($api_base_url.'/categories/:id/attributes', 'api/Attr/add');
+//添加分类
+Route::post($api_base_url.'/categories', 'api/Cate/add');
+
 
 Route::put($api_base_url.'/users/:id/role', 'api/Users/editRoleById');
 Route::put($api_base_url.'/users/:uid/state/:type', 'api/Users/updateState');
 Route::put($api_base_url.'/users/:id', 'api/Users/updateInfo');
+Route::put($api_base_url.'/categories/:id/attributes/:attrId', 'api/Attr/updateAttr');
 
 
-Route::delete($api_base_url.'/users/:id', 'api/Users/deleteById');
-Route::delete($api_base_url.'/roles/:roleId/rights/:rightId', 'api/Roles/removeRolesById');
-Route::delete($api_base_url.'/goods/:id', 'api/Good/removeGoodsById');
+Route::delete($api_base_url.'/users/:id', 'api/Users/removeUserById');
+Route::delete($api_base_url.'/roles/:roleId/rights/:rightId', 'api/Roles/removeRoleById');
+Route::delete($api_base_url.'/goods/:id', 'api/Good/removeGoodById');
+Route::delete($api_base_url.'/categories/:id/attributes/:attrId', 'api/Attr/removeAttrById');
+Route::delete($api_base_url.'/categories/:id', 'api/Cate/removeCateById');
 
 
+Route::get($api_base_url.'/categories/:id/attributes/:attrId', 'api/Attr/findById');
+Route::get($api_base_url.'/categories/:id/attributes', 'api/Attr/index');
+Route::get($api_base_url.'/categories/:id', 'api/Cate/findById');
 Route::get($api_base_url.'/rights/:type', 'api/Rights/index');
 Route::get($api_base_url.'/users/:id', 'api/Users/findById');
 Route::get($api_base_url.'/users', 'api/Users/index');
 Route::get($api_base_url.'/menus', 'api/Menus/index');
 Route::get($api_base_url.'/roles', 'api/Roles/index');
 Route::get($api_base_url.'/goods', 'api/Good/index');
+Route::get($api_base_url.'/categories', 'api/Cate/index');
 
 return [
     // '__pattern__' => [

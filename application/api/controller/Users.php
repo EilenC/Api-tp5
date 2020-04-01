@@ -117,7 +117,7 @@ class Users extends Common
             "email"       => $list['mg_email'],
             "create_time" => $list['mg_time'],
         ];
-        self::return_msg(200, '用户创建成功!', $data);
+        self::return_msg(201, '用户创建成功!', $data);
     }
 
     /**
@@ -214,7 +214,7 @@ class Users extends Common
      * 根据 ID 删除单个用户
      * @param $id
      */
-    public function deleteById($id)
+    public function removeUserById($id)
     {
         $result = Manager::where(['mg_id' => (int)$id])->delete();
         if ($result == 0) {
