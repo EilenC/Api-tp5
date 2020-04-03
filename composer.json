@@ -18,7 +18,8 @@
     "require": {
         "php": ">=5.4.0",
         "topthink/framework": "5.0.*",
-        "firebase/php-jwt": "2.0.0"
+        "firebase/php-jwt": "2.0.0",
+        "topthink/think-image": "v1.0.7"
     },
     "autoload": {
         "psr-4": {

@@ -22,6 +22,10 @@ Route::post($api_base_url.'/roles/:roleId/rights', 'api/Roles/setRolesById');
 Route::post($api_base_url.'/categories/:id/attributes', 'api/Attr/add');
 //添加分类
 Route::post($api_base_url.'/categories', 'api/Cate/add');
+//添加商品
+Route::post($api_base_url.'/goods', 'api/Good/add');
+//上传图片
+Route::post($api_base_url.'/upload', 'api/Upload/index');
 
 
 Route::put($api_base_url.'/users/:id/role', 'api/Users/editRoleById');
@@ -45,6 +49,7 @@ Route::get($api_base_url.'/users/:id', 'api/Users/findById');
 Route::get($api_base_url.'/users', 'api/Users/index');
 Route::get($api_base_url.'/menus', 'api/Menus/index');
 Route::get($api_base_url.'/roles', 'api/Roles/index');
+Route::get($api_base_url.'/goods/:id', 'api/Good/findById');
 Route::get($api_base_url.'/goods', 'api/Good/index');
 Route::get($api_base_url.'/categories', 'api/Cate/index');
 

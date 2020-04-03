@@ -30,7 +30,7 @@ class Cate extends Common
 
         $list = $this->get_category_info((int)$type, $pagenum, $pagesize);
         $data = [
-            "total"    => Category::count(),
+            "total"    => Category::where('cat_level',0)->count(),
             "pagenum"  => $pagenum,
             "pagesize" => $pagesize,
             "result"   => $list,
@@ -44,11 +44,21 @@ class Cate extends Common
      */
     public function add()
     {
-        if (self::is_val(input('post.cat_pid')) || self::is_val(input('post.cat_name')) || self::is_val(input('post.cat_level'))) {
+        if (self::is_val(input('post.cat_name'))) {
             self::return_msg(400, '请求参数错误!');
         }
-        $pid = input('post.cat_pid');
-        $level = input('post.cat_level');
+        if(self::is_val(input('post.cat_pid'))){
+            $pid = 0;
+        }else{
+            $pid = input('post.cat_pid');
+        }
+
+        if(self::is_val(input('post.cat_level'))){
+            $level = 0;
+        }else{
+            $level = input('post.cat_level');
+        }
+
         $name = self::clear_space(input('post.cat_name'));
         $params_info = [
             "cat_name"    => $name,

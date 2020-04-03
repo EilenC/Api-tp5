@@ -61,6 +61,11 @@ class Common extends Controller
         return false;
     }
 
+    /**
+     * 清空字符串中所有的空格
+     * @param $str
+     * @return string|string[]
+     */
     static public function clear_space($str)
     {
         return str_replace(" ",'',$str);

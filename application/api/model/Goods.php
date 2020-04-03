@@ -18,5 +18,12 @@ class Goods extends Model
     use SoftDelete;
     protected $deleteTime = 'delete_time';
     protected $pk = 'goods_id';
+    public function getIsPromoteAttr($value){
+        $deleted = [
+            0 => false,
+            1 => true
+        ];
 
+        return $deleted[$value];
+    }
 }
