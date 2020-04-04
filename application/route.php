@@ -52,6 +52,9 @@ Route::get($api_base_url.'/roles', 'api/Roles/index');
 Route::get($api_base_url.'/goods/:id', 'api/Good/findById');
 Route::get($api_base_url.'/goods', 'api/Good/index');
 Route::get($api_base_url.'/categories', 'api/Cate/index');
+Route::get($api_base_url.'/orders', 'api/Orders/index');
+Route::get($api_base_url.'/exp/:id', 'api/Exp/index');
+Route::get($api_base_url.'/reports/type/:id', 'api/Reports/index');
 
 return [
     // '__pattern__' => [
